@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="../assets/css/styles.min.css?h=afd71d53af4af9deb59ab7881120ba9e">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.4.8/swiper-bundle.min.css">
+    <script src="../assets/js/jquery-3.6.0.js"></script>
+    <script src="../assets/js/parsley.js"></script>
+    <script src="../assets/js/admin_script.js"></script>
 </head>
 
 <body class="d-flex d-xxl-flex justify-content-center align-items-center justify-content-xxl-center align-items-xxl-center" style="height: 1085px;padding-top: 0px;background: url(&quot;../assets/img/admin_bg.png?h=d48309209de4b47e32bdb528503ca658&quot;) center / cover no-repeat;border-radius: 10px;">
@@ -49,6 +52,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.4.8/swiper-bundle.min.js"></script>
     <script src="../assets/js/script.min.js?h=334b48fb223084a2659075094c4d7507"></script>
+
 </body>
 
 </html>
