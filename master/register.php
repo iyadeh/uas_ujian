@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+
+<?php
+
+include('Examination.php');
+$exam = new Examination;
+$exam->admin_session_public();
+ 
+?>
+
 <html lang="en">
 
 <head>
