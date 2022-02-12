@@ -1,13 +1,17 @@
 <?php
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-use PHPMailer\PHPMailer\SMTP;
-
-require '../PHPMailer/src/Exception.php';
-require '../PHPMailer/src/PHPMailer.php';
-require '../PHPMailer/src/SMTP.php';
-  
+//kondisi agar tidak bisa diakses ketika object sedang dibuat
+if(isset($_POST ['user'])){
+	//for client
+	use PHPMailer\PHPMailer\PHPMailer;
+	use PHPMailer\PHPMailer\Exception;
+	use PHPMailer\PHPMailer\SMTP;
+}else{
+	//for admin
+	require '../PHPMailer/src/Exception.php';
+	require '../PHPMailer/src/PHPMailer.php';
+	require '../PHPMailer/src/SMTP.php';  
+}
 
     class Examination
     {
@@ -58,9 +62,24 @@ require '../PHPMailer/src/SMTP.php';
                 $this->redirect('index.php');
             }
         }
-
+	    
+	//redirect halaman client set
+	function user_session_private()
+	{
+            if(!isset($_SESSION['user_id']))
+            {
+                $this->redirect('login.php');
+            }
+	}
+	function user_session_public()
+        {
+            if(isset($_SESSION['user_id']))
+            {
+                $this->redirect('index.php');
+            }
+        }
+	    
         //cek ke database
-        
         function execute_query()
         {
             //prepare() untuk menyiapkan query untuk dijalankan
