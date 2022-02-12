@@ -23,6 +23,9 @@ $exam->user_session_public();
     <link rel="stylesheet" href="assets/css/styles.min.css?h=afd71d53af4af9deb59ab7881120ba9e">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.4.8/swiper-bundle.min.css">
+    <script src="assets/js/jquery-3.6.0.js"></script>
+    <script src="assets/js/parsley.js"></script>
+    <script src="assets/js/user_script.js"></script>
 </head>
 
 <body class="d-flex justify-content-center align-items-center" style="height: 843px;background: url(&quot;assets/img/peserta_bg.png?h=f7b1bbb9631751695e2d2b0d0bf58a9e&quot;) center / cover no-repeat;min-height: 715px;">
