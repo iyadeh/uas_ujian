@@ -1,4 +1,14 @@
 <!DOCTYPE html>
+
+<?php
+
+$_POST['user']=true;
+include('master/Examination.php');
+$exam = new Examination;
+$exam->user_session_private();
+ 
+?>
+
 <html lang="en" style="height: 1073px;margin: 0px;">
 
 <head>
