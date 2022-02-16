@@ -11,7 +11,7 @@ $current_datetime = date("Y-m-d") . ' ' . date("H:i:s", STRTOTIME(date('h:i:sa')
 //menerima data dari page user
 if(isset($_POST['page']))
 {
-	
+	//menerima data dari page register.php
 	if($_POST['page'] == 'register')
 	{
 		if($_POST['action'] == 'check_email')
@@ -63,14 +63,13 @@ if(isset($_POST['page']))
 
 			$exam->execute_query();
 
-			$subject= 'Online Examination Registration Verification';
+			$subject= 'Verifikasi Akun Peserta Ujian';
 
 			$body = '
-			<p>Thank you for registering.</p>
-			<p>This is a verification eMail, please click the link to verify your eMail address by clicking this <a href="'.$exam->home_page.'verify_email.php?type=user&code='.$user_verfication_code.'" target="_blank"><b>link</b></a>.</p>
+			<p>Selamat akunmu sudah terdaftar.</p>
+			<p>Klik tautan ini untuk verifikasi  <a href="'.$exam->user_page.'user_action.php?type=user&code='.$user_verfication_code.'" target="_blank"><b>gaskan ujian</b></a>.</p>
 			<p>In case if you have any difficulty please eMail us.</p>
-			<p>Thank you,</p>
-			<p>Online Examination System</p>
+			<p>Terim kasih</p>
 			';
 
 			$exam->send_email($receiver_email, $subject, $body);
@@ -83,6 +82,7 @@ if(isset($_POST['page']))
 		}
 	}
 
+	//menerima data dari page login.php
 	if($_POST['page'] == 'login')
 	{
 		if($_POST['action'] == 'login')
@@ -97,6 +97,7 @@ if(isset($_POST['page']))
 			";
 
 			$total_row = $exam->total_row();
+
 
 			if($total_row > 0)
 			{
@@ -114,32 +115,32 @@ if(isset($_POST['page']))
 								'success'	=>	true
 							);
 						}
-						else
-						{
-							$output = array(
-								'error'		=>	'Wrong Password'
-							);
-						}
-					}
-					else
-					{
-						$output = array(
-							'error'		=>	'Your Email is not verify'
-						);
 					}
 				}
 			}
-			else
-			{
-				$output = array(
-					'error'		=>	'Wrong Email Address'
-				);
-			}
-
 			echo json_encode($output);
 		}
 	}
 	
 }
 
+//verifikasi email
+if(isset($_GET['type']) && isset($_GET['code'])){
+	if($_GET['type'] == 'user')
+	{
+		$exam->data = array(
+			':user_email_verified'	=>	'yes'
+		);
+
+		$exam->query = "
+		UPDATE peserta 
+		SET user_email_verified = :user_email_verified 
+		WHERE user_verfication_code = '".$_GET['code']."'
+		";
+
+		$exam->execute_query();
+
+		$exam->redirect('login.php?verified=success');
+	}
+}
 ?>
