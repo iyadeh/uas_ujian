@@ -1,14 +1,15 @@
-<!DOCTYPE html>
-
 <?php
 
-$_POST['user']=true;
-include('master/Examination.php');
-$exam = new Examination;
-$exam->user_session_public();
- 
-?>
+$_POST['user'] = true;
 
+include('master/Examination.php');
+
+$exam = new Examination;
+
+$exam->user_session_public();
+
+?>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -25,7 +26,7 @@ $exam->user_session_public();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.4.8/swiper-bundle.min.css">
     <script src="assets/js/jquery-3.6.0.js"></script>
     <script src="assets/js/parsley.js"></script>
-    <script src="assets/js/user_script.js"></script>
+    <script src="user_script/login_script.js"></script>
 </head>
 
 <body class="d-flex justify-content-center align-items-center" style="height: 843px;background: url(&quot;assets/img/peserta_bg.png?h=f7b1bbb9631751695e2d2b0d0bf58a9e&quot;) center / cover no-repeat;min-height: 715px;">
