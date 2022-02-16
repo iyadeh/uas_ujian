@@ -1,3 +1,13 @@
+<?php
+
+include('Examination.php');
+
+$exam = new Examination;
+
+$exam->admin_session_private();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en" style="height: 1073px;">
 
