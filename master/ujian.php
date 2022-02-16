@@ -26,7 +26,180 @@ $exam->admin_session_private();
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.11.4/r-2.2.9/datatables.min.css"/>
     <script src="../assets/js/jquery-3.6.0.js"></script>
     <script src="../assets/js/parsley.js"></script>
+    <script src="../assets/js/admin_script.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.11.4/r-2.2.9/datatables.min.js"></script>
+    <script>
+
+        $(document).ready(function(){
+            //menampilkan list ujian yang difetch dari database
+            var dataTable = $('#exam_data_table').DataTable({
+                "processing" : true,
+                "serverSide" : true,
+                "responsive" : true,
+                "dataSrc": "",
+                "order" : [],
+                "ajax" : {
+                    url: "admin_action.php",
+                    type:"POST",
+                    data :{action:'fetch', page:'exam'}
+                },
+                "columnDefs":[
+                    {
+                        "targets":[7, 8, 9],
+                        "orderable":false,
+                        "defaultContent": "-",
+                        "targets": "_all"
+                    },
+                ],
+            });
+
+            	//fungsi untuk reset form
+            function reset_form()
+            {
+                $('#modal_title').text('Tambah Ujian');
+                $('#button_action').val('Add');
+                $('#action').val('Add');
+                $('#exam_form')[0].reset();
+                $('#exam_form').parsley().reset();
+            }
+
+            //ketika tombol add di klik maka modal muncul
+            $('#add_button').click(function(){
+                reset_form();
+                $('#formModal').modal('show');
+                $('#message_operation').html('');
+            });
+
+            //menambahkan ujian baru
+            $('#exam_form').parsley();
+
+            //memastikan isi form sesuai
+            $('#exam_form').on('submit', function(event){
+                event.preventDefault();
+
+                $('#online_exam_title').attr('required', 'required');
+
+                $('#online_exam_datetime').attr('required', 'required');
+
+                $('#online_exam_duration').attr('required', 'required');
+
+                $('#total_question').attr('required', 'required');
+
+                $('#marks_per_right_answer').attr('required', 'required');
+
+                $('#marks_per_wrong_answer').attr('required', 'required');
+
+                //apabila isi form sesuai, data akan dikirimkan ke server menggunakan ajax
+                if($('#exam_form').parsley().validate())
+                {
+                    $.ajax({
+                        url:"admin_action.php",
+                        method:"POST",
+                        data:$(this).serialize(),
+                        dataType:"json",
+                        beforeSend:function(){
+                            $('#button_action').attr('disabled', 'disabled');
+                            $('#button_action').html('Validate...');
+                        },
+                        success:function(data)
+                        {
+                            if(data.success)
+                            {
+                                $('#message_operation').html('<div class="alert alert-success">'+data.success+'</div>');
+
+                                reset_form();
+
+                                dataTable.ajax.reload();
+
+                                $('#formModal').modal('hide');
+                            }
+
+                            $('#button_action').attr('disabled', false);
+
+                            $('#button_action').html($('#action').val());
+                        }
+                    });
+                }
+            });
+
+	        var date = new Date();
+            date.setDate(date.getDate());
+
+            function reset_question_form()
+            {
+                $('#question_modal_title').text('Add Question');
+                $('#question_button_action').val('Add');
+                $('#hidden_action').val('Add');
+                $('#question_form')[0].reset();
+                $('#question_form').parsley().reset();
+            }
+
+            //menambahkan pertanyaan
+            $(document).on('click', '.add_question', function(){
+                reset_question_form();
+                $('#questionModal').modal('show');
+                $('#message_operation').html('');
+                exam_id = $(this).attr('id');
+                $('#hidden_online_exam_id').val(exam_id);
+            });
+
+            $('#question_form').parsley();
+
+            //validasi isi form 
+            $('#question_form').on('submit', function(event){
+                event.preventDefault();
+
+                $('#question_title').attr('required', 'required');
+
+                $('#option_title_1').attr('required', 'required');
+
+                $('#option_title_2').attr('required', 'required');
+
+                $('#option_title_3').attr('required', 'required');
+
+                $('#option_title_4').attr('required', 'required');
+
+                $('#answer_option').attr('required', 'required');
+
+                //apabila sis form sesuai maka akan dikirimkan ke server menggunakan ajax
+                if($('#question_form').parsley().validate())
+                {
+                    $.ajax({
+                        url:"admin_action.php",
+                        method:"POST",
+                        data:$(this).serialize(),
+                        dataType:"json",
+                        beforeSend:function(){
+                            $('#question_button_action').attr('disabled', 'disabled');
+
+                            $('#question_button_action').html('Validate...');
+                        },
+                        success:function(data)
+                        {
+                            if(data.success)
+                            {
+                                $('#message_operation').html('<div class="alert alert-success">'+data.success+'</div>');
+
+                                reset_question_form();
+                                dataTable.ajax.reload();
+                                $('#questionModal').modal('hide');
+                            }
+
+                            $('#question_button_action').attr('disabled', false);
+
+                            $('#question_button_action').val($('#hidden_action').val());
+                        }
+                    });
+                }
+            });
+
+            dataTable 
+
+            var exam_id = '';
+        });
+
+    </script>
+
 
 </head>
 
