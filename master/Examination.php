@@ -47,14 +47,12 @@ if(isset($_POST['user'])){
     
             session_start();
         }
-
-        //redirect halaman admin side
         function redirect($page)
         {
             header('location:'.$page.'');
             exit;
         }
-        
+        //redirect halaman admin side
         function admin_session_private()
         {
             if(!isset($_SESSION['admin_id']))
@@ -101,7 +99,7 @@ if(isset($_POST['user'])){
         function total_row()
         {
             $this->execute_query();
-            //rowCount() menghitung jumlah baris yang dikembalikan oleh query
+            //rowCount() menghitung jumlah baris yang dikembalikan oleh query dengan memastikan apakah data ada pada tabel database
             return $this->statement->rowCount();
         }
 
@@ -120,6 +118,7 @@ if(isset($_POST['user'])){
             return $data;
         }
 
+        //fungsi untuk membandingkan waktu ujian dan waktu sekarang
         function Is_exam_is_not_started($online_exam_id)
         {
             $current_datetime = date("Y-m-d") . ' ' . date("H:i:s", STRTOTIME(date('h:i:sa')));
@@ -137,7 +136,7 @@ if(isset($_POST['user'])){
             {
                 $exam_datetime = $row['online_exam_datetime'];
             }
-    
+            //apabila watu ujian setelah waktu sekarang maka ujian belum dimulai dan akan mengembalikan nilai false
             if($exam_datetime > $current_datetime)
             {
                 return true;
@@ -145,6 +144,21 @@ if(isset($_POST['user'])){
             return false;
         }
 
+        //menentukan apakah ujian masih dapat ditambahkan pertanyaan atau pertanyaan sudah mencapai limit
+        function Is_allowed_add_question($exam_id)
+        {
+            $exam_question_limit = $this->Get_exam_question_limit($exam_id);
+    
+            $exam_total_question = $this->Get_exam_total_question($exam_id);
+    
+            if($exam_total_question >= $exam_question_limit)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        //mengambil jumlah pertanyaan yang diinputkan oleh admin ketika membuat ujian
         function Get_exam_question_limit($exam_id)
         {
             $this->query = "
@@ -159,7 +173,7 @@ if(isset($_POST['user'])){
                 return $row['total_question'];
             }
         }
-    
+        //mengambil jumlah pertanyaan yang diinputkan oleh admin sampai sekarang
         function Get_exam_total_question($exam_id)
         {
             $this->query = "
@@ -170,18 +184,6 @@ if(isset($_POST['user'])){
             return $this->total_row();
         }
 
-        function Is_allowed_add_question($exam_id)
-        {
-            $exam_question_limit = $this->Get_exam_question_limit($exam_id);
-    
-            $exam_total_question = $this->Get_exam_total_question($exam_id);
-    
-            if($exam_total_question >= $exam_question_limit)
-            {
-                return false;
-            }
-            return true;
-        }
 
         function execute_question_with_last_id()
         {
@@ -243,6 +245,143 @@ if(isset($_POST['user'])){
                 move_uploaded_file($_source_path, $target_path);
     
                 return $new_name;
+            }
+        }
+        
+        //mengubah status ujian
+        function Change_exam_status($user_id)
+        {
+            $this->query = "
+            SELECT * FROM peserta_ujian 
+            INNER JOIN ujian 
+            ON ujian.online_exam_id = peserta_ujian.exam_id 
+            WHERE peserta_ujian.user_id = '".$user_id."'
+            ";
+    
+            $result = $this->query_result();
+    
+            $current_datetime = date("Y-m-d") . ' ' . date("H:i:s", STRTOTIME(date('h:i:sa')));
+    
+            foreach($result as $row)
+            {
+                $exam_start_time = $row["online_exam_datetime"];
+    
+                $duration = $row["online_exam_duration"] . ' minute';
+    
+                $exam_end_time = strtotime($exam_start_time . '+' . $duration);
+    
+                $exam_end_time = date('Y-m-d H:i:s', $exam_end_time);
+    
+                $view_exam = '';
+    
+                if($current_datetime >= $exam_start_time && $current_datetime <= $exam_end_time)
+                {
+                    $this->data = array(
+                        ':online_exam_status'	=>	'Started'
+                    );
+    
+                    $this->query = "
+                    UPDATE ujian 
+                    SET online_exam_status = :online_exam_status 
+                    WHERE online_exam_id = '".$row['online_exam_id']."'
+                    ";
+    
+                    $this->execute_query();
+                }
+                else
+                {
+                    if($current_datetime > $exam_end_time)
+                    {
+                        $this->data = array(
+                            ':online_exam_status'	=>	'Completed'
+                        );
+    
+                        $this->query = "
+                        UPDATE ujian 
+                        SET online_exam_status = :online_exam_status 
+                        WHERE online_exam_id = '".$row['online_exam_id']."'
+                        ";
+    
+                        $this->execute_query();
+                    }					
+                }
+            }
+        }
+
+        //memastikan apakah user sudah membuat datar ujian atau belum
+        function If_user_already_enroll_exam($exam_id, $user_id)
+        {
+            $this->query = "
+            SELECT * FROM peserta_ujian 
+            WHERE exam_id = '$exam_id' 
+            AND user_id = '$user_id'
+            ";
+            if($this->total_row() > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        function Fill_exam_list()
+        {
+            $this->query = "
+            SELECT online_exam_id, online_exam_title 
+                FROM ujian 
+                WHERE online_exam_status = 'Created' OR online_exam_status = 'Pending' 
+                ORDER BY online_exam_title ASC
+            ";
+            $result = $this->query_result();
+            $output = '';
+            foreach($result as $row)
+            {
+                $output .= '<option value="'.$row["online_exam_id"].'">'.$row["online_exam_title"].'</option>';
+            }
+            return $output;
+        }
+
+        function Get_exam_id($exam_code)
+        {
+            $this->query = "
+            SELECT online_exam_id FROM ujian 
+            WHERE online_exam_code = '$exam_code'
+            ";
+    
+            $result = $this->query_result();
+    
+            foreach($result as $row)
+            {
+                return $row['online_exam_id'];
+            }
+        }
+
+        //cek status ujian
+        function Get_exam_status($exam_id)
+        {
+            $this->query = "
+            SELECT online_exam_status FROM ujian 
+            WHERE online_exam_id = '".$exam_id."' 
+            ";
+            $result = $this->query_result();
+            foreach($result as $row)
+            {
+                return $row["online_exam_status"];
+            }
+        }
+        
+        //cek status peserta
+        function Get_user_exam_status($exam_id, $user_id)
+        {
+            $this->query = "
+            SELECT attendance_status 
+            FROM peserta_ujian 
+            WHERE exam_id = '$exam_id' 
+            AND user_id = '$user_id'
+            ";
+            $result = $this->query_result();
+            foreach($result as $row)
+            {
+                return $row["attendance_status"];
             }
         }
     }
