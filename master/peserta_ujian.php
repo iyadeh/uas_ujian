@@ -1,3 +1,13 @@
+<?php
+
+include('Examination.php');
+
+$exam = new Examination;
+
+$exam->admin_session_private();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en" style="height: 1073px;">
 
@@ -13,6 +23,11 @@
     <link rel="stylesheet" href="../assets/css/styles.min.css?h=f48f749d5f1033436d1965c971a43629">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.4.8/swiper-bundle.min.css">
+    <script src="../assets/js/jquery-3.6.0.js"></script>
+    <script src="../assets/js/parsley.js"></script>
+    <script src="../assets/js/peserta_ujian_script.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.11.4/r-2.2.9/datatables.min.js"></script>
+
 </head>
 
 <body class="d-flex d-xxl-flex justify-content-center align-items-center justify-content-xxl-center align-items-xxl-center" style="background: url(&quot;../assets/img/1.png?h=d48309209de4b47e32bdb528503ca658&quot;) center / cover no-repeat;height: 832px;">
