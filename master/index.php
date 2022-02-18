@@ -1,10 +1,13 @@
 <?php
 
 include('Examination.php');
+
 $exam = new Examination;
+
 $exam->admin_session_private();
- 
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en" style="height: 1073px;margin: 0px;">
 
@@ -33,7 +36,7 @@ $exam->admin_session_private();
                         <div class="collapse navbar-collapse" id="navcol-1">
                             <ul class="navbar-nav me-auto">
                                 <li class="nav-item"><a class="nav-link" href="ujian.php">Ujian</a></li>
-                                <li class="nav-item"><a class="nav-link" href="peserta.html">Peserta</a></li>
+                                <li class="nav-item"><a class="nav-link" href="peserta.php">Peserta</a></li>
                             </ul><span class="navbar-text actions"> <a class="login" href="#"></a><a class="btn btn-light shadow action-button" role="button" href="logout.php" style="background: rgb(111,18,255);">Keluar</a></span>
                         </div>
                     </div>
@@ -49,11 +52,11 @@ $exam->admin_session_private();
                         <!-- Start: Slide Wrapper -->
                         <div class="swiper-wrapper">
                             <!-- Start: Slide -->
-                            <div class="shadow-lg swiper-slide" style="background: url(&quot;https://cdn.bootstrapstudio.io/placeholders/1400x800.png&quot;) center center / cover no-repeat;border-radius: 21px;"></div><!-- End: Slide -->
+                            <div class="shadow-lg swiper-slide" style="background: url() center center / cover no-repeat;border-radius: 21px;"></div><!-- End: Slide -->
                             <!-- Start: Slide -->
-                            <div class="shadow-lg swiper-slide" style="background: url(&quot;https://cdn.bootstrapstudio.io/placeholders/1400x800.png&quot;) center center / cover no-repeat;border-radius: 21px;"></div><!-- End: Slide -->
+                            <div class="shadow-lg swiper-slide" style="background: url() center center / cover no-repeat;border-radius: 21px;"></div><!-- End: Slide -->
                             <!-- Start: Slide -->
-                            <div class="shadow-lg swiper-slide" style="background: url(&quot;https://cdn.bootstrapstudio.io/placeholders/1400x800.png&quot;) center center / cover no-repeat;border-radius: 21px;"></div><!-- End: Slide -->
+                            <div class="shadow-lg swiper-slide" style="background: url() center center / cover no-repeat;border-radius: 21px;"></div><!-- End: Slide -->
                         </div><!-- End: Slide Wrapper -->
                         <!-- Start: Pagination -->
                         <div class="swiper-pagination"></div><!-- End: Pagination -->
