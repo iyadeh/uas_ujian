@@ -64,6 +64,8 @@ $(document).ready(function(){
         }
 
     });
+
+    
     /*HALAMAN LOGIN*/
     $('#admin_login_form').parsley();
 
@@ -104,6 +106,11 @@ $(document).ready(function(){
         }
 
     });
+
+
+
+
+    
     /*HALAMAN UJIAN*/
     //Menampilkan data ujian dari database menggunakan plugin datatables
     var dataTable = $('#exam_data_table').DataTable({
@@ -319,7 +326,7 @@ $(document).ready(function(){
 
 				$('#online_exam_id').val(exam_id);
 
-				$('#modal_title').text('Edit Exam Details');
+				$('#modal_title').val('Edit Ujian');
 
 				$('#button_action').val('Edit');
 
