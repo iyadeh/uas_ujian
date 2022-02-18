@@ -8,6 +8,7 @@ $current_datetime = date("Y-m-d") . ' ' . date("H:i:s", STRTOTIME(date('h:i:sa')
 
 if(isset($_POST['page']))
 {
+	//melakukan cek email pada database, apabila tidak ada maka akan mengembalikan data array dan form email pada halaman register bisa di isi
     if($_POST['page'] == 'register')
 	{
 		if($_POST['action'] == 'check_email')
@@ -29,6 +30,7 @@ if(isset($_POST['page']))
 			}
 		}
 
+		//Mengambil inputan form registrasi
 		if($_POST['action'] == 'register')
 		{
 			$admin_verification_code = md5(rand());
@@ -52,6 +54,7 @@ if(isset($_POST['page']))
 
 			$exam->execute_query();
 
+			//mengirimkan email ke email pendaftar
 			$subject = 'Verifikasi Akun Admin Ujian';
 
 			$body = '
@@ -77,22 +80,24 @@ if(isset($_POST['page']))
 			$exam->data = array(
 				':admin_email_address'	=>	$_POST['admin_email_address']
 			);
-
+			//mengecek pada database apakah email ada atau tidak
 			$exam->query = "
 			SELECT * FROM admin
 			WHERE admin_email_address = :admin_email_address
 			";
 
 			$total_row = $exam->total_row();
-
+			//apabila ada
 			if($total_row > 0)
 			{
 				$result = $exam->query_result();
 
 				foreach($result as $row)
 				{
+					//cek apakah email sudah terverivikasi atau belum
 					if($row['email_verified'] == 'yes')
 					{
+						//cocokkan password input dengan database
 						if(password_verify($_POST['admin_password'], $row['admin_password']))
 						{
 							$_SESSION['admin_id'] = $row['admin_id'];
@@ -119,7 +124,7 @@ if(isset($_POST['page']))
 			WHERE admin_id = '".$_SESSION["admin_id"]."' 
 			AND (
 			";
-
+			//fetch database apabila kolom perncarian digunakan
 			if(isset($_POST['search']['value']))
 			{
 				$exam->query .= 'online_exam_title LIKE "%'.$_POST["search"]["value"].'%" ';
@@ -161,6 +166,7 @@ if(isset($_POST['page']))
 
 			$result = $exam->query_result();
 
+			//Mengambil semua data ujian dari database
 			$exam->query = "
 			SELECT * FROM ujian 
 			WHERE admin_id = '".$_SESSION["admin_id"]."'
@@ -191,7 +197,7 @@ if(isset($_POST['page']))
 				$delete_button = '';
 				$question_button = '';
 				$result_button = '';
-
+				//menampilkan status ujian
 				if($row['online_exam_status'] == 'Pending')
 				{
 					$status = '<span class="badge badge-warning">Pending</span>';
@@ -212,20 +218,23 @@ if(isset($_POST['page']))
 					$status = '<span class="badge badge-dark">Completed</span>';
 				}
 
+				//Apabila ujian belum dimulai maka admin dapat edit dan hapush ujian
 				if($exam->Is_exam_is_not_started($row["online_exam_id"]))
 				{
 					$edit_button = '
 					<button type="button" name="edit" class="btn btn-primary btn-sm edit" id="'.$row['online_exam_id'].'">Edit</button>
 					';
 
-					$delete_button = '<button type="button" name="delete" class="btn btn-danger btn-sm delete" id="'.$row['online_exam_id'].'">Delete</button>';
+					$delete_button = '<button type="button" name="delete" class="btn btn-danger btn-sm delete" id="'.$row['online_exam_id'].'">Hapus</button>';
 
 				}
+				//apabila ujian sudah selesai maka admin dapat melihat hasilnya
 				else
 				{
 					$result_button = '<a href="exam_result.php?code='.$row["online_exam_code"].'" class="btn btn-dark btn-sm">Result</a>';
 				}
 
+				//apabila pertanyaan masih belum sesuai dengan jumlah awal yang ditentukan maka admin msih dapat menambahkan pertanyaan
 				if($exam->Is_allowed_add_question($row['online_exam_id']))
 				{
 					$question_button = '
@@ -234,6 +243,7 @@ if(isset($_POST['page']))
 				}
 				else
 				{
+				//apabila jumlah pertanyaan sam dengan jumlah awaln maka admin dapat melihat list pertanyaan dan tidak dapat menambhakan pertanyaan lagi
 					$question_button = '
 					<a href="question.php?code='.$row['online_exam_code'].'" class="btn btn-warning btn-sm">Lihat pertanyaan</a>
 					';
@@ -381,6 +391,246 @@ if(isset($_POST['page']))
 	
 				echo json_encode($output);
 			}
+		}
+	}
+
+	if($_POST['page'] == 'exam_enroll')
+	{
+		if($_POST['action'] == 'fetch')
+		{
+			$output = array();
+
+			$exam_id = $exam->Get_exam_id($_POST['code']);
+
+			$exam->query = "
+			SELECT * FROM peserta_ujian 
+			INNER JOIN peserta 
+			ON peserta.user_id = peserta_ujian.user_id  
+			WHERE peserta_ujian.exam_id = '".$exam_id."' 
+			AND (
+			";
+
+			if(isset($_POST['search']['value']))
+			{
+				$exam->query .= '
+				peserta.user_name LIKE "%'.$_POST["search"]["value"].'%" 
+				';
+				$exam->query .= 'OR peserta.user_gender LIKE "%'.$_POST["search"]["value"].'%" ';
+				$exam->query .= 'OR peserta.user_mobile_no LIKE "%'.$_POST["search"]["value"].'%" ';
+				$exam->query .= 'OR peserta.user_email_verified LIKE "%'.$_POST["search"]["value"].'%" ';
+			}
+			$exam->query .= ') ';
+
+			if(isset($_POST['order']))
+			{
+				$exam->query .= 'ORDER BY '.$_POST['order']['0']['column'].' '.$_POST['order']['0']['dir'].' ';
+			}
+			else
+			{
+				$exam->query .= 'ORDER BY peserta_ujian.user_exam_enroll_id ASC ';
+			}
+
+			$extra_query = '';
+
+			if($_POST['length'] != -1)
+			{
+				$extra_query = 'LIMIT ' . $_POST['start'] . ', ' . $_POST['length'];
+			}
+
+			$filtered_rows = $exam->total_row();
+
+			$exam->query .= $extra_query;
+
+			$result = $exam->query_result();
+
+			$exam->query = "
+			SELECT * FROM peserta_ujian 
+			INNER JOIN peserta 
+			ON peserta.user_id = peserta_ujian.user_id  
+			WHERE peserta_ujian.exam_id = '".$exam_id."'
+			";
+
+			$total_rows = $exam->total_row();
+
+			$data = array();
+
+			foreach($result as $row)
+			{
+				$sub_array = array();
+				$sub_array[] = "<img src='../upload/".$row["user_image"]."' class='img-thumbnail' width='75' />";
+				$sub_array[] = $row["user_name"];
+				$sub_array[] = $row["user_gender"];
+				$sub_array[] = $row["user_mobile_no"];
+				$is_email_verified = '';
+
+				if($row['user_email_verified'] == 'yes')
+				{
+					$is_email_verified = '<label class="badge badge-success">Yes</label>';
+				}
+				else
+				{
+					$is_email_verified = '<label class="badge badge-danger">No</label>';
+				}
+				$sub_array[] = $is_email_verified;
+				$result = '';
+
+				if($exam->Get_exam_status($exam_id) == 'Completed')
+				{
+					$result = '<a href="user_exam_result.php?code='.$_POST['code'].'&id='.$row['user_id'].'" class="btn btn-info btn-sm" target="_blank">Result</a>';
+				}
+				$sub_array[] = $result;
+
+				$data[] = $sub_array;
+			}
+
+			$output = array(
+				"draw"				=>	intval($_POST["draw"]),
+				"recordsTotal"		=>	$total_rows,
+				"recordsFiltered"	=>	$filtered_rows,
+				"data"				=>	$data
+			);
+
+			echo json_encode($output);
+		}
+	}
+
+
+	if($_POST['page'] == 'user')
+	{
+		if($_POST['action'] == 'fetch')
+		{
+			$output = array();
+
+			$exam->query = "
+			SELECT * FROM peserta 
+			WHERE ";
+
+			if(isset($_POST["search"]["value"]))
+			{
+			 	$exam->query .= 'user_email_address LIKE "%'.$_POST["search"]["value"].'%" ';
+			 	$exam->query .= 'OR user_name LIKE "%'.$_POST["search"]["value"].'%" ';
+			 	$exam->query .= 'OR user_gender LIKE "%'.$_POST["search"]["value"].'%" ';
+			 	$exam->query .= 'OR user_mobile_no LIKE "%'.$_POST["search"]["value"].'%" ';
+			}
+			
+			if(isset($_POST["order"]))
+			{
+				$exam->query .= 'ORDER BY '.$_POST['order']['0']['column'].' '.$_POST['order']['0']['dir'].' ';
+			}
+			else
+			{
+				$exam->query .= 'ORDER BY user_id DESC ';
+			}
+
+			$extra_query = '';
+
+			if($_POST["length"] != -1)
+			{
+			 	$extra_query .= 'LIMIT ' . $_POST['start'] . ', ' . $_POST['length'];
+			}
+
+			$filterd_rows = $exam->total_row();
+
+			$exam->query .= $extra_query;
+
+			$result = $exam->query_result();
+
+			$exam->query = "
+			SELECT * FROM peserta";
+
+			$total_rows = $exam->total_row();
+
+			$data = array();
+
+			foreach($result as $row)
+			{
+				$sub_array = array();
+				$sub_array[] = '<img src="../upload/'.$row["user_image"].'" class="img-thumbnail" width="75" />';
+				$sub_array[] = $row["user_name"];
+				$sub_array[] = $row["user_email_address"];
+				$sub_array[] = $row["user_gender"];
+				$sub_array[] = $row["user_mobile_no"];
+				$is_email_verified = '';
+				if($row["user_email_verified"] == 'yes')
+				{
+					$is_email_verified = '<label class="badge badge-success">Yes</label>';
+				}
+				else
+				{
+					$is_email_verified = '<label class="badge badge-danger">No</label>';	
+				}
+								
+				$sub_array[] = $is_email_verified;
+				$sub_array[] = '';
+				$data[] = $sub_array;
+			}
+
+			$output = array(
+			 	"draw"    			=> 	intval($_POST["draw"]),
+			 	"recordsTotal"  	=>  $total_rows,
+			 	"recordsFiltered" 	=> 	$filterd_rows,
+			 	"data"    			=> 	$data
+			);
+			echo json_encode($output);	
+		}
+		if($_POST['action'] == 'fetch_data')
+		{
+			$exam->query = "
+			SELECT * FROM peserta 
+			WHERE user_id = '".$_POST["user_id"]."'
+			";
+			$result = $exam->query_result();
+			$output = '';
+			foreach($result as $row)
+			{
+				$is_email_verified = '';
+				if($row["user_email_verified"] == 'yes')
+				{
+					$is_email_verified = '<label class="badge badge-success">Email Verified</label>';
+				}
+				else
+				{
+					$is_email_verified = '<label class="badge badge-danger">Email Not Verified</label>';	
+				}
+
+				$output .= '
+				<div class="row">
+					<div class="col-md-12">
+						<div align="center">
+							<img src="../upload/'.$row["user_image"].'" class="img-thumbnail" width="200" />
+						</div>
+						<br />
+						<table class="table table-bordered">
+							<tr>
+								<th>Name</th>
+								<td>'.$row["user_name"].'</td>
+							</tr>
+							<tr>
+								<th>Gender</th>
+								<td>'.$row["user_gender"].'</td>
+							</tr>
+							<tr>
+								<th>Address</th>
+								<td>'.$row["user_address"].'</td>
+							</tr>
+							<tr>
+								<th>Mobile No.</th>
+								<td>'.$row["user_mobile_no"].'</td>
+							</tr>
+							<tr>
+								<th>Email</th>
+								<td>'.$row["user_email_address"].'</td>
+							</tr>
+							<tr>
+								<th>Email Status</th>
+								<td>'.$is_email_verified.'</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				';
+			}	
+			echo $output;			
 		}
 	}
 }
