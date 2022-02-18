@@ -63,7 +63,6 @@ $(document).ready(function(){
             beforeSend:function()
             {
             $('#user_register').attr('disabled', 'disabled');
-            $('#user_register').html('please wait...');
             },
             success:function(data)
             {
