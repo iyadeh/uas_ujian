@@ -37,7 +37,7 @@ $exam->admin_session_private();
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title" id="modal_title"></h4><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h4 class="modal-title" id="modal_title"></h4><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
                     <div class="modal-body" style="background: rgba(255,255,255,0.07);">
                         <div class="form-group"><input class="shadow form-control" type="text" id="online_exam_title" style="margin-bottom: 10px;" placeholder="Nama Ujian" name="online_exam_title"></div>
@@ -80,8 +80,8 @@ $exam->admin_session_private();
                         <input type="hidden" name="online_exam_id" id="online_exam_id" />
                         <input type="hidden" name="page" value="exam" />
                         <input type="hidden" name="action" id="action" value="Add" />
-                        <button class="btn btn-light shadow" type="button" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-primary bg-success shadow" id="button_action" type="submit" name="button_action" value="Add">Add</button>
+                        <button class="btn btn-light shadow" type="button" data-bs-dismiss="modal">Tutup</button>
+                        <button class="btn btn-primary bg-success shadow" id="button_action" type="submit" name="button_action" value="Add">Tambah</button>
                     </div>
                 </div>
             </div>
@@ -93,7 +93,7 @@ $exam->admin_session_private();
             <div class="modal-content">
                 <form id="question_form" method="post">
                     <div class="modal-header">
-                        <h4 class="modal-title" >Tambah Pertanyaan</h4><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h4 class="modal-title" >Tambah Pertanyaan</h4><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group"><input class="shadow form-control" type="text" id="question_title" style="margin-bottom: 10px;" placeholder="Pertanyaan" autocomplete="off" name="question_title"></div>
@@ -110,12 +110,12 @@ $exam->admin_session_private();
                             </select></div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-light" type="button" data-bs-dismiss="modal">Tutup</button>
                         <input type="hidden" name="question_id" id="question_id" />
                         <input type="hidden" name="online_exam_id" id="hidden_online_exam_id" />
                         <input type="hidden" name="page" value="question" />
                         <input type="hidden" name="action" id="hidden_action" value="Add" />
-                        <button class="btn btn-primary" id="question_button_action" type="submit" name="question_button_action" value="Add">Add</button>
+                        <button class="btn btn-primary" id="question_button_action" type="submit" name="question_button_action" value="Add">Tambah</button>
                     </div>
                 </form>
             </div>
@@ -126,7 +126,7 @@ $exam->admin_session_private();
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="modal_title">Hapus</h4><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h4 class="modal-title" id="modal_title">Hapus</h4><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body" style="background: rgba(255,255,255,0.07);">
                     <div>
